@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Facturación</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <h1>Sistema de Facturación</h1>
+    <nav class="nav-tabs">
+        <button id="tabListado" class="tab-btn activo">Listado de Comprobantes</button>
+        <button id="tabNueva" class="tab-btn">+ Registrar Factura</button>
+    </nav>
+</header>
+
+<main class="contenedor">
+    <div id="seccionListado">
+        <section class="panel">
+            <div class="panel-titulo">
+                <span>Filtrar Comprobantes</span>
+            </div>
+
+            <div class="grilla-form">
+                <div class="campo">
+                    <label for="txtFiltroNumero">N° de Comprobante</label>
+                    <input type="text" id="txtFiltroNumero" placeholder="Ej: 1020">
+                </div>
+                <div class="campo">
+                    <label for="txtFiltroCliente">Cliente</label>
+                    <input type="text" id="txtFiltroCliente" placeholder="Buscar por razón social...">
+                </div>
+                <div class="campo">
+                    <label for="txtFiltroIva">Condición frente al IVA</label>
+                    <input type="text" id="txtFiltroIva" placeholder="Ej: Responsable Inscripto">
+                </div>
+                <div class="campo">
+                    <label for="selFiltroEstado">Estado</label>
+                    <select id="selFiltroEstado">
+                        <option value="">Todos</option>
+                        <option value="AUTORIZADA">Autorizadas</option>
+                        <option value="PENDIENTE">Pendientes</option>
+                        <option value="ANULADA">Anuladas</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="txtFechaDesde">Fecha Desde</label>
+                    <input type="date" id="txtFechaDesde">
+                </div>
+                <div class="campo">
+                    <label for="txtFechaHasta">Fecha Hasta</label>
+                    <input type="date" id="txtFechaHasta">
+                </div>
+            </div>
+
+            <div class="acciones-barra">
+                <button id="btnAplicarFiltros" class="btn-primario">Aplicar Filtros</button>
+                <button id="btnLimpiarFiltros" class="btn-secundario">Restablecer</button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-titulo">
+                <span>Facturas Registradas</span>
+                <small id="contadorFacturas" class="contador">0 comprobantes</small>
+            </div>
+
+            <div class="tabla-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Condición IVA</th>
+                        <th>Punto de venta</th>
+                        <th class="texto-derecha">Total</th>
+                        <th>Estado</th>
+                        <th>Operaciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbodyFacturas">
+                    <tr>
+                        <td colspan="8" class="texto-centro">
+                            Cargando datos del servidor...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paginacion">
+                <label for="selTamanioPagina">Mostrar</label>
+                <select id="selTamanioPagina">
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+                <span>por página</span>
+                <button type="button" id="btnPaginaAnterior" class="btn-secundario btn-chico">← Anterior</button>
+                <span id="infoPagina">Página 1 de 1</span>
+                <button type="button" id="btnPaginaSiguiente" class="btn-secundario btn-chico">Siguiente →</button>
+            </div>
+        </section>
+    </div>
+
+
+    <div id="seccionAlta" class="oculto">
+        <form id="formAltaFactura">
+            <section class="panel">
+                <div class="panel-titulo">
+                    <span>1. Datos del comprobante</span>
+                    <button type="button" id="btnVolver" class="btn-secundario btn-chico">← Volver al listado</button>
+                </div>
+
+                <div class="grilla-form">
+                    <div class="campo">
+                        <label for="inputNumero">Número de factura</label>
+                        <input type="text" id="inputNumero" value="Automático" readonly>
+                        <small class="ayuda-input">Se genera solo al guardar.</small>
+                    </div>
+                    <div class="campo">
+                        <label for="inputPuntoVenta">Punto de venta</label>
+                        <select id="inputPuntoVenta" required disabled>
+                            <option value="">Cargando puntos de venta...</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="inputMoneda">Tipo de moneda</label>
+                        <select id="inputMoneda" required disabled>
+                            <option value="">Cargando monedas...</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="inputCondicionIva">Condición de IVA del cliente</label>
+                        <select id="inputCondicionIva" required disabled>
+                            <option value="">Cargando condiciones de IVA...</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-titulo">
+                    <span>2. Cliente</span>
+                </div>
+
+                <div class="grilla-form">
+                    <div class="campo campo-ancho">
+                        <label for="clienteDescripcion">Cliente seleccionado</label>
+                        <input type="hidden" id="inputCliente">
+                        <div class="selector-cliente">
+                            <input type="text" id="clienteDescripcion" value="Consumidor final" readonly>
+                            <button type="button" id="btnBuscarCliente" class="btn-primario">Buscar cliente</button>
+                            <button type="button" id="btnQuitarCliente" class="btn-secundario">Consumidor final</button>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="inputTipoDocumentoArca">Tipo de documento del cliente</label>
+                        <select id="inputTipoDocumentoArca">
+                            <option value="80">CUIT</option>
+                            <option value="86">CUIL</option>
+                        </select>
+                        <small class="ayuda-input">
+                            Sin cliente, se factura a consumidor final sin identificar.
+                        </small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-titulo">
+                    <span>3. Artículos</span>
+                    <button type="button" id="btnSumarRenglon" class="btn-exito btn-chico">+ Sumar Renglón</button>
+                </div>
+
+                <div class="grilla-form">
+                    <div class="campo">
+                        <label for="inputListaPrecio">Lista de precios</label>
+                        <select id="inputListaPrecio" disabled>
+                            <option value="">Cargando listas de precios...</option>
+                        </select>
+                        <small class="ayuda-input">Elegila antes de buscar artículos: solo se muestran los de esta lista.</small>
+                    </div>
+                </div>
+
+                <div class="tabla-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Artículo</th>
+                            <th class="texto-derecha">Precio unit.</th>
+                            <th>Cantidad</th>
+                            <th>Bonificación (%)</th>
+                            <th class="texto-derecha">Subtotal</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbodyRenglones"></tbody>
+                    </table>
+                </div>
+
+                <div class="resumen-totales">
+                    <div class="caja-totales">
+                        <div class="fila-total">
+                            <span>Artículos cargados</span>
+                            <span id="cantidadArticulos">0</span>
+                        </div>
+                        <div class="fila-total">
+                            <span>Subtotal</span>
+                            <span id="subtotalFactura">$0.00</span>
+                        </div>
+                        <div class="fila-total">
+                            <span>Bonificaciones</span>
+                            <span id="bonificacionFactura">-$0.00</span>
+                        </div>
+                        <div class="fila-total final">
+                            <span>Total</span>
+                            <span id="totalFactura">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acciones-barra acciones-final">
+                    <button type="button" id="btnCancelarAlta" class="btn-secundario">Cancelar</button>
+                    <button type="submit" id="btnGuardarFactura" class="btn-primario">
+                        Confirmar y Guardar Factura
+                    </button>
+                </div>
+            </section>
+        </form>
+    </div>
+
+</main>
+
+<dialog id="explorerDialog" class="explorer" aria-labelledby="explorerTitulo">
+    <div class="explorer-cabecera">
+        <h2 id="explorerTitulo">Buscar</h2>
+        <button type="button" id="btnCerrarExplorer" class="btn-cerrar" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="explorer-busqueda">
+        <label for="explorerBusqueda">Buscar</label>
+        <div class="explorer-barra">
+            <input type="search" id="explorerBusqueda" placeholder="Escribí y presioná Buscar..." autocomplete="off">
+            <button type="button" id="btnExplorerBuscar" class="btn-primario">Buscar</button>
+        </div>
+        <p id="explorerEstado" class="explorer-estado" role="status" aria-live="polite"></p>
+    </div>
+    <div class="tabla-wrapper">
+        <table>
+            <thead><tr id="explorerColumnas"></tr></thead>
+            <tbody id="explorerFilas"></tbody>
+        </table>
+    </div>
+</dialog>
+
+<script type="module" src="./dist/app.js"></script>
+</body>
+</html>
